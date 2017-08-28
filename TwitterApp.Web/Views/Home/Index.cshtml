@@ -1,0 +1,111 @@
+﻿@using System.Security.Claims;
+
+@{
+    ViewBag.Title = "Home Page";
+
+    var identity = (ClaimsIdentity)User.Identity;
+    var claims = identity.Claims;
+    var sid = identity.Claims.Where(c => c.Type == ClaimTypes.PrimarySid).Select(c => c.Value).SingleOrDefault();
+}
+
+@if (string.IsNullOrWhiteSpace(sid))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="col-md-12">Associate a twitter user to your account.</h2>
+            @using (Html.BeginForm("ExternalLogin", "Account"))
+            {
+                @Html.AntiForgeryToken()
+                <div id="socialLoginList">
+                    <p>
+                        <button type="submit" class="btn btn-default" id="Twitter" name="provider" value="Twitter" title="Log in using your Twitter account">Login with Twitter</button>
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="row" ng-controller="twitterSearch" ng-init="init('@sid')" ng-cloak>
+        <div class="row">
+            <h2 class="col-md-12">Twitter user: @@{{data.user}}</h2>
+        </div>
+        <div class="row" style="border-bottom: dashed 1px; margin-bottom: 20px">
+            <div class="col-md-4">
+                <label>New Tweet</label>
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="input.newTweet" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" ng-click="newTweet()" ng-hide="status.working">Send</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <h3>Latest Tweets</h3>
+                <table class="table">
+                    <tbody>
+                        <tr ng-show="status.loadingTweets">
+                            <td>Loading...</td>
+                        </tr>
+                        <tr ng-hide="status.loadingTweets" ng-repeat="tweet in data.tweets">
+                            <td>{{tweet}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <label>Search by place</label>
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="input.placeId" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" ng-click="searchPlaceTweets()" ng-hide="status.working">Search</button>
+                        </span>
+                    </div>
+                </div>
+                <table class="table" style="border-top: dashed 1px">
+                    <tbody>
+                        <tr ng-show="status.loadingPlaceTweets">
+                            <td>Loading...</td>
+                        </tr>
+                        <tr ng-hide="status.loadingPlaceTweets" ng-repeat="tweet in data.placeTweets">
+                            <td>{{tweet}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Search by user</label>
+                        <input type="text" class="form-control" ng-model="input.user" />
+                    </div>
+                    <div class="col-md-6">
+                        <label>HashTag</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="input.hashTag" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" ng-click="searchUserTweets()" ng-hide="status.working">Search</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <table class="table" style="border-top: dashed 1px">
+                    <tbody>
+                        <tr ng-show="status.loadingUserTweets">
+                            <td>Loading...</td>
+                        </tr>
+                        <tr ng-hide="status.loadingUserTweets" ng-repeat="tweet in data.userTweets">
+                            <td>{{tweet}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

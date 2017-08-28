@@ -1,0 +1,1 @@
+﻿This project contains the implementation of the default interfaces from the common project. It does not have any third party dependencies, only Dapper. 

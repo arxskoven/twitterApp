@@ -1,0 +1,8 @@
+﻿CREATE TABLE [dbo].[AppUser]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
+	[Email] VARCHAR(60) NOT NULL UNIQUE,
+	[Password] VARCHAR(512) NULL,
+	[Type] INT NOT NULL, 
+    CONSTRAINT [FK_AppUser_AppUserType] FOREIGN KEY ([Type]) REFERENCES [AppUserType]([Id])
+)
